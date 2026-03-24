@@ -16,7 +16,8 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newClient, setNewClient] = useState({ name: '', address: '', email: '', phone: '' });
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [formData, setFormData] = useState({ name: '', address: '', email: '', phone: '' });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -35,31 +36,65 @@ export default function ClientsPage() {
     }
   };
 
-  const handleAddClient = async (e: React.FormEvent) => {
+  const handleEditClick = (client: Client) => {
+    setEditingClient(client);
+    setFormData({
+      name: client.name,
+      address: client.address,
+      email: client.email,
+      phone: client.phone || '',
+    });
+    setShowAddModal(true);
+  };
+
+  const handleDeleteClient = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+    try {
+      const res = await fetch(`/api/client/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      toast.success('Client deleted');
+      fetchClients();
+    } catch (error) {
+      toast.error('Failed to delete client');
+    }
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newClient.name) return;
+    if (!formData.name) return;
     setSaving(true);
     try {
-      const res = await fetch('/api/client', {
-        method: 'POST',
+      const url = editingClient ? `/api/client/${editingClient.id}` : '/api/client';
+      const method = editingClient ? 'PUT' : 'POST';
+      
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newClient),
+        body: JSON.stringify(formData),
       });
+
       if (!res.ok) throw new Error();
-      toast.success('Client added successfully');
-      setNewClient({ name: '', address: '', email: '', phone: '' });
+      
+      toast.success(editingClient ? 'Client updated successfully' : 'Client added successfully');
+      setFormData({ name: '', address: '', email: '', phone: '' });
+      setEditingClient(null);
       setShowAddModal(false);
       fetchClients();
     } catch (error) {
-      toast.error('Failed to add client');
+      toast.error(editingClient ? 'Failed to update client' : 'Failed to add client');
     } finally {
       setSaving(false);
     }
   };
 
+  const openNewModal = () => {
+    setEditingClient(null);
+    setFormData({ name: '', address: '', email: '', phone: '' });
+    setShowAddModal(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -72,7 +107,7 @@ export default function ClientsPage() {
             </div>
           </div>
           <button
-            onClick={() => setShowAddModal(true)}
+            onClick={openNewModal}
             className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition-colors shadow-sm"
           >
             <span className="material-symbols-outlined text-[18px]">person_add</span>
@@ -94,7 +129,7 @@ export default function ClientsPage() {
             <h2 className="text-lg font-semibold text-gray-700 mb-1">No clients yet</h2>
             <p className="text-sm text-gray-400 mb-6">Add your first client to start creating invoices.</p>
             <button
-              onClick={() => setShowAddModal(true)}
+              onClick={openNewModal}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition-colors"
             >
               Add Client
@@ -105,8 +140,26 @@ export default function ClientsPage() {
             {clients.map((client) => (
               <div
                 key={client.id}
-                className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-green-200 hover:shadow-md transition-all duration-200"
+                className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-green-200 hover:shadow-md transition-all duration-200 group relative"
               >
+                {/* Actions */}
+                <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    onClick={() => handleEditClick(client)}
+                    className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-green-50 hover:text-green-600 flex items-center justify-center transition-colors"
+                    title="Edit Client"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">edit</span>
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteClient(client.id, client.name)}
+                    className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors"
+                    title="Delete Client"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                  </button>
+                </div>
+
                 {/* Avatar + Name */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
@@ -114,12 +167,11 @@ export default function ClientsPage() {
                       {client.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 pr-12">
                     <p className="text-sm font-bold text-gray-900 truncate">{client.name}</p>
                   </div>
                 </div>
 
-                {/* Contact info */}
                 <div className="space-y-2 text-xs text-gray-500">
                   {client.email && (
                     <div className="flex items-center gap-2">
@@ -143,9 +195,8 @@ export default function ClientsPage() {
               </div>
             ))}
 
-            {/* Add new card */}
             <button
-              onClick={() => setShowAddModal(true)}
+              onClick={openNewModal}
               className="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-5 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-green-300 hover:text-green-600 transition-all duration-200 min-h-[160px]"
             >
               <span className="material-symbols-outlined text-[28px]">add_circle</span>
@@ -155,24 +206,26 @@ export default function ClientsPage() {
         )}
       </main>
 
-      {/* Add Client Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Add New Client</h3>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">Customer Information</p>
+                <h3 className="text-lg font-bold text-gray-900">
+                  {editingClient ? 'Edit Client' : 'Add New Client'}
+                </h3>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">
+                  {editingClient ? 'Update information' : 'Customer Information'}
+                </p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
                 className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
-                aria-label="Close modal"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
-            <form onSubmit={handleAddClient} className="p-6 sm:p-8 space-y-5">
+            <form onSubmit={handleFormSubmit} className="p-6 sm:p-8 space-y-5">
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">Full Name</label>
                 <input
@@ -180,8 +233,8 @@ export default function ClientsPage() {
                   required
                   placeholder="e.g. SkillBytes LLC"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
-                  value={newClient.name}
-                  onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
               <div className="space-y-1.5">
@@ -191,8 +244,8 @@ export default function ClientsPage() {
                   required
                   placeholder="contact@company.com"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
-                  value={newClient.email}
-                  onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
               <div className="space-y-1.5">
@@ -201,8 +254,8 @@ export default function ClientsPage() {
                   required
                   placeholder="+1 (555) 000-0000"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
-                  value={newClient.phone}
-                  onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </div>
               <div className="space-y-1.5">
@@ -212,8 +265,8 @@ export default function ClientsPage() {
                   rows={3}
                   placeholder="Company HQ Address..."
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all resize-none placeholder:text-gray-300"
-                  value={newClient.address}
-                  onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 />
               </div>
               <button
@@ -221,7 +274,7 @@ export default function ClientsPage() {
                 type="submit"
                 className="w-full py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors shadow-lg shadow-green-200 disabled:opacity-50"
               >
-                {saving ? 'Adding...' : 'Add Client'}
+                {saving ? (editingClient ? 'Updating...' : 'Adding...') : (editingClient ? 'Update Client' : 'Add Client')}
               </button>
             </form>
           </div>
