@@ -143,21 +143,14 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   const handleDownload = () => {
     if (!pdfRef.current) return;
 
-    // Replace relative src paths with absolute URLs so they load in the popup
     const origin = window.location.origin;
     const content = pdfRef.current!.outerHTML.replace(
       /src="(\/[^"]+)"/g,
       `src="${origin}$1"`
     );
-    const filename = invoiceNumber || 'invoice';
+    const filename = (invoiceNumber || 'invoice') + '.pdf';
 
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    if (!printWindow) {
-      toast.error('Please allow popups to download the PDF.');
-      return;
-    }
-
-    printWindow.document.write(`<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -177,9 +170,9 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
       var resolved = 0;
       function onDone() {
         resolved++;
-        if (resolved >= total) { setTimeout(function() { window.print(); window.close(); }, 300); }
+        if (resolved >= total) { setTimeout(function() { window.print(); }, 400); }
       }
-      if (total === 0) { setTimeout(function() { window.print(); window.close(); }, 300); return; }
+      if (total === 0) { setTimeout(function() { window.print(); }, 400); return; }
       images.forEach(function(img) {
         if (img.complete && img.naturalWidth !== 0) { onDone(); }
         else { img.addEventListener('load', onDone); img.addEventListener('error', onDone); }
@@ -187,8 +180,25 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     })();
   <\/script>
 </body>
-</html>`);
-    printWindow.document.close();
+</html>`;
+
+    // Use a hidden iframe to trigger print dialog directly (no popup window)
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:0;height:0;border:none;';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    iframe.onload = () => {
+      // Give images inside iframe time to render
+      setTimeout(() => {
+        try { iframe.contentWindow?.print(); } catch {}
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          URL.revokeObjectURL(url);
+        }, 1000);
+      }, 500);
+    };
   };
 
   // ─── Duplicate ─────────────────────────────────────────────────────────────

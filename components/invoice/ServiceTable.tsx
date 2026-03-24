@@ -100,7 +100,7 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
                 onChange={(e) => update(index, 'description', e.target.value)}
               />
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-end">
               <div className="flex-1 space-y-1">
                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Qty</label>
                 <input
@@ -122,7 +122,7 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
                   onChange={(e) => update(index, 'rate', Number(e.target.value))}
                 />
               </div>
-              <div className="flex items-end pb-0.5">
+              <div className="w-11 shrink-0">
                 <button
                   type="button"
                   onClick={() => removeRow(index)}

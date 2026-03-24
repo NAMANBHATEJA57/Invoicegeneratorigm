@@ -70,15 +70,15 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4mm' }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, marginBottom: '1.5mm', color: '#1a1a1a', fontSize: '10.5pt' }}>Billed to</div>
-          <div style={{ fontWeight: 600, marginBottom: '0.5mm' }}>{data.client.name || 'SkillBytes LLC'}</div>
+          <div style={{ fontWeight: 600, marginBottom: '0.5mm' }}>{data.client.name || 'Client Name'}</div>
           <div style={{ color: '#555', fontSize: '8.5pt', lineHeight: '1.4', whiteSpace: 'pre-line', maxWidth: '80mm' }}>
-            {data.client.address || '8 The Green, Ste A, Dover, DE 19901,\nCounty of Kent, USA'}
+            {data.client.address || 'Client Address'}
           </div>
           <div style={{ color: '#555', fontSize: '8.5pt', marginTop: '1mm' }}>
-            Email: {data.client.email || 'tech@swiftskillshare.tech'}
+            Email: {data.client.email || 'client@email.com'}
           </div>
           <div style={{ color: '#555', fontSize: '8.5pt' }}>
-            Contact: {data.client.phone || '+91 9205363497'}
+            Contact: {data.client.phone || '+00 00000 00000'}
           </div>
         </div>
         <div style={{ flex: 1, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
