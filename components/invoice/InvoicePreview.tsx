@@ -43,7 +43,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
       style={{
         width: '210mm',
         height: '297mm',
-        padding: '12mm 15mm',
+        padding: '10mm 14mm',
         background: '#fff',
         fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
         fontSize: '9.5pt',
@@ -55,8 +55,8 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
       }}
     >
       {/* ── HEADER ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8mm' }}>
-        <h1 style={{ fontSize: '32pt', fontWeight: 700, margin: 0, color: '#000', letterSpacing: '-0.02em' }}>INVOICE</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '5mm' }}>
+        <h1 style={{ fontSize: '28pt', fontWeight: 700, margin: 0, color: '#000', letterSpacing: '-0.02em' }}>INVOICE</h1>
         <div style={{ textAlign: 'right' }}>
           <img
             src={LOGO_B64}
@@ -67,7 +67,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
       </div>
 
       {/* ── BILLED SECTION ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6mm' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4mm' }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, marginBottom: '1.5mm', color: '#1a1a1a', fontSize: '10.5pt' }}>Billed to</div>
           <div style={{ fontWeight: 600, marginBottom: '0.5mm' }}>{data.client.name || 'SkillBytes LLC'}</div>
@@ -96,10 +96,10 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
         </div>
       </div>
 
-      <div style={{ borderTop: '1px solid #eee', marginBottom: '8mm' }} />
+      <div style={{ borderTop: '1px solid #eee', marginBottom: '5mm' }} />
 
       {/* ── MAIN CONTENT (SIDEBAR + TABLE) ── */}
-      <div style={{ display: 'flex', gap: '12mm', marginBottom: '6mm' }}>
+      <div style={{ display: 'flex', gap: '10mm', marginBottom: '4mm' }}>
         {/* Sidebar */}
         <div style={{ width: '40mm', flexShrink: 0 }}>
           <div style={{ marginBottom: '6mm' }}>
@@ -145,7 +145,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
               {/* Limited spacer rows */}
               {data.services.length < 3 && Array.from({ length: 3 - data.services.length }).map((_, i) => (
                 <tr key={`spacer-${i}`}>
-                   <td style={{ padding: '5mm 3mm' }}>&nbsp;</td>
+                   <td style={{ padding: '3mm 3mm' }}>&nbsp;</td>
                    <td></td>
                    <td></td>
                    <td></td>
@@ -165,7 +165,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
       </div>
 
       {/* ── BOTTOM SECTION: REMARKS ── */}
-      <div style={{ marginBottom: '6mm' }}>
+      <div style={{ marginBottom: '4mm' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '2mm', marginBottom: '1.5mm' }}>
           <div style={{ width: '10px', height: '10px', backgroundColor: '#9CA3AF', borderRadius: '2px' }} />
           <div style={{ fontSize: '9pt', color: '#555' }}>
@@ -181,7 +181,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
       </div>
 
       {/* ── BANK DETAILS & SIGNATURE ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '8mm' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '5mm' }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, color: '#000', marginBottom: '2mm', fontSize: '10.5pt' }}>Bank Details</div>
           <div style={{ fontSize: '9pt', color: '#555', lineHeight: '1.5' }}>
@@ -194,7 +194,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
         </div>
 
         <div style={{ width: '70mm', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ height: '28mm', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '1mm' }}>
+          <div style={{ height: '20mm', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '1mm' }}>
             <img
               src="/Sign.svg"
               alt="Signature"
