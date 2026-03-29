@@ -8,9 +8,9 @@ interface Client {
   id: string;
   name: string;
   address: string;
-  email?: string;
-  phone?: string;
-  gstin?: string;
+  email?: string | null;
+  phone?: string | null;
+  gstin?: string | null;
 }
 
 export default function ClientsPage() {
