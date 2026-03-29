@@ -8,8 +8,9 @@ interface Client {
   id: string;
   name: string;
   address: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
+  gstin?: string;
 }
 
 export default function ClientsPage() {
@@ -17,7 +18,7 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [formData, setFormData] = useState({ name: '', address: '', email: '', phone: '' });
+  const [formData, setFormData] = useState({ name: '', address: '', email: '', phone: '', gstin: '' });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -41,8 +42,9 @@ export default function ClientsPage() {
     setFormData({
       name: client.name,
       address: client.address,
-      email: client.email,
+      email: client.email || '',
       phone: client.phone || '',
+      gstin: client.gstin || '',
     });
     setShowAddModal(true);
   };
@@ -76,7 +78,7 @@ export default function ClientsPage() {
       if (!res.ok) throw new Error();
       
       toast.success(editingClient ? 'Client updated successfully' : 'Client added successfully');
-      setFormData({ name: '', address: '', email: '', phone: '' });
+      setFormData({ name: '', address: '', email: '', phone: '', gstin: '' });
       setEditingClient(null);
       setShowAddModal(false);
       fetchClients();
@@ -89,7 +91,7 @@ export default function ClientsPage() {
 
   const openNewModal = () => {
     setEditingClient(null);
-    setFormData({ name: '', address: '', email: '', phone: '' });
+    setFormData({ name: '', address: '', email: '', phone: '', gstin: '' });
     setShowAddModal(true);
   };
 
@@ -185,6 +187,12 @@ export default function ClientsPage() {
                       <span>{client.phone}</span>
                     </div>
                   )}
+                  {client.gstin && (
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[14px] text-gray-300 flex-shrink-0">receipt_long</span>
+                      <span>GSTIN: {client.gstin}</span>
+                    </div>
+                  )}
                   {client.address && (
                     <div className="flex items-start gap-2">
                       <span className="material-symbols-outlined text-[14px] text-gray-300 flex-shrink-0 mt-0.5">location_on</span>
@@ -241,7 +249,6 @@ export default function ClientsPage() {
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">Email Address</label>
                 <input
                   type="email"
-                  required
                   placeholder="contact@company.com"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
                   value={formData.email}
@@ -251,11 +258,19 @@ export default function ClientsPage() {
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">Phone Number</label>
                 <input
-                  required
                   placeholder="+1 (555) 000-0000"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">GSTIN</label>
+                <input
+                  placeholder="e.g. 29ABCDE1234F1Z5"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
+                  value={formData.gstin}
+                  onChange={(e) => setFormData({ ...formData, gstin: e.target.value })}
                 />
               </div>
               <div className="space-y-1.5">

@@ -13,8 +13,9 @@ export interface InvoiceData {
   client: {
     name: string;
     address: string;
-    email: string;
-    phone: string;
+    email?: string;
+    phone?: string;
+    gstin?: string;
   };
   services: ServiceRow[];
 }
@@ -74,12 +75,21 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
           <div style={{ color: '#555', fontSize: '8.5pt', lineHeight: '1.4', whiteSpace: 'pre-line', maxWidth: '80mm' }}>
             {data.client.address || 'Client Address'}
           </div>
-          <div style={{ color: '#555', fontSize: '8.5pt', marginTop: '1mm' }}>
-            Email: {data.client.email || 'client@email.com'}
-          </div>
-          <div style={{ color: '#555', fontSize: '8.5pt' }}>
-            Contact: {data.client.phone || '+00 00000 00000'}
-          </div>
+          {data.client.email && (
+            <div style={{ color: '#555', fontSize: '8.5pt', marginTop: '1mm' }}>
+              Email: {data.client.email}
+            </div>
+          )}
+          {data.client.phone && (
+            <div style={{ color: '#555', fontSize: '8.5pt' }}>
+              Contact: {data.client.phone}
+            </div>
+          )}
+          {data.client.gstin && (
+            <div style={{ color: '#555', fontSize: '8.5pt' }}>
+              GSTIN: {data.client.gstin}
+            </div>
+          )}
         </div>
         <div style={{ flex: 1, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <div style={{ fontWeight: 700, marginBottom: '1.5mm', color: '#1a1a1a', fontSize: '10.5pt' }}>Billed From</div>

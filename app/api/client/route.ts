@@ -18,15 +18,16 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, address, email, phone } = body as {
+    const { name, address, email, phone, gstin } = body as {
       name: string;
       address: string;
-      email: string;
-      phone: string;
+      email?: string;
+      phone?: string;
+      gstin?: string;
     };
 
     const client = await prisma.client.create({
-      data: { name, address, email, phone },
+      data: { name, address, email, phone, gstin },
     });
     return NextResponse.json(client, { status: 201 });
   } catch (error) {

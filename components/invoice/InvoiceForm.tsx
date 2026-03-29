@@ -11,8 +11,9 @@ interface Client {
   id: string;
   name: string;
   address: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
+  gstin?: string;
 }
 
 interface InvoiceFormProps {
@@ -78,7 +79,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   };
 
   // New client state
-  const [newClient, setNewClient] = useState({ name: '', address: '', email: '', phone: '' });
+  const [newClient, setNewClient] = useState({ name: '', address: '', email: '', phone: '', gstin: '' });
 
   const selectedClient = clients.find((c) => c.id === clientId);
   const total = services.reduce((sum, s) => sum + s.total, 0);
@@ -93,6 +94,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
       address: selectedClient?.address ?? '',
       email: selectedClient?.email ?? '',
       phone: selectedClient?.phone ?? '',
+      gstin: selectedClient?.gstin ?? '',
     },
     services,
   };
@@ -111,7 +113,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
       setClients((prev) => [...prev, created]);
       setClientId(created.id);
       setShowNewClient(false);
-      setNewClient({ name: '', address: '', email: '', phone: '' });
+      setNewClient({ name: '', address: '', email: '', phone: '', gstin: '' });
     } catch {
       setError('Failed to create client.');
     }
@@ -353,6 +355,12 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
                     placeholder="Phone"
                     value={newClient.phone}
                     onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
+                  />
+                  <input
+                    placeholder="GSTIN"
+                    value={newClient.gstin}
+                    onChange={(e) => setNewClient({ ...newClient, gstin: e.target.value })}
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
                   />
                   <div className="flex gap-3 pt-1">

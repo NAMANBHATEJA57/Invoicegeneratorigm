@@ -14,8 +14,9 @@ model Client {
   id        String    @id @default(uuid())
   name      String
   address   String
-  email     String
-  phone     String
+  email     String?
+  phone     String?
+  gstin     String?
   createdAt DateTime  @default(now())
   invoices  Invoice[]
 }
