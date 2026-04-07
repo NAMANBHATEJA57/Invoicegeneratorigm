@@ -25,6 +25,7 @@ export const BILLER = {
   address: 'BC 2, West Shalimar Bagh, Delhi – 110088, India',
   email: 'rupali.piyush@gmail.com',
   phone: '+91 9899485651',
+  pan: 'AJUPB8140M',
   bank: {
     name: 'HDFC Bank',
     branch: 'Adarsh Nagar',

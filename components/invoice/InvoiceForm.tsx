@@ -50,6 +50,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   const [date, setDate] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
+  const [showPan, setShowPan] = useState(true);
   const [services, setServices] = useState<ServiceRow[]>([]);
 
   // Initialize on mount
@@ -89,6 +90,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     date,
     dueDate,
     notes,
+    showPan,
     client: {
       name: selectedClient?.name ?? '',
       address: selectedClient?.address ?? '',
@@ -126,7 +128,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     setError('');
     setSaving(true);
     try {
-      const payload = { clientId, date, dueDate, notes, services };
+      const payload = { clientId, date, dueDate, notes, showPan, services };
       const res = invoiceId
         ? await fetch(`/api/invoice/${invoiceId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         : await fetch('/api/invoice', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -139,7 +141,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     } finally {
       setSaving(false);
     }
-  }, [clientId, date, dueDate, notes, services, invoiceId, router]);
+  }, [clientId, date, dueDate, notes, showPan, services, invoiceId, router]);
 
   // ─── Download PDF ──────────────────────────────────────────────────────────
   const handleDownload = () => {
@@ -207,7 +209,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   const handleDuplicate = useCallback(async () => {
     setSaving(true);
     try {
-      const payload = { clientId, date, dueDate, notes, services };
+      const payload = { clientId, date, dueDate, notes, showPan, services };
       const res = await fetch('/api/invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -221,7 +223,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     } finally {
       setSaving(false);
     }
-  }, [clientId, date, dueDate, notes, services, router]);
+  }, [clientId, date, dueDate, notes, showPan, services, router]);
 
   // ─── Render ────────────────────────────────────────────────────────────────
   if (!mounted) {
@@ -428,6 +430,35 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
                 onChange={(e) => setNotes(e.target.value)}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all resize-none placeholder:text-gray-400"
               />
+            </section>
+
+            {/* PAN Toggle */}
+            <section className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-700">Show PAN on Invoice</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">PAN: AJUPB8140M</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPan((v) => !v)}
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                    showPan ? 'bg-green-600' : 'bg-gray-200'
+                  }`}
+                  aria-label="Toggle PAN visibility"
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      showPan ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+              {!showPan && (
+                <p className="text-xs text-amber-600 mt-3 bg-amber-50 rounded-lg px-3 py-2">
+                  PAN will be hidden from the invoice preview and PDF.
+                </p>
+              )}
             </section>
 
             {/* Mobile action buttons */}

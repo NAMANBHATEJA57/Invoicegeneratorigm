@@ -10,6 +10,7 @@ export interface InvoiceData {
   date: string;
   dueDate: string;
   notes?: string;
+  showPan?: boolean;
   client: {
     name: string;
     address: string;
@@ -103,6 +104,11 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
           <div style={{ color: '#555', fontSize: '8.5pt' }}>
             Mobile: {BILLER.phone}
           </div>
+          {data.showPan !== false && (
+            <div style={{ color: '#555', fontSize: '8.5pt' }}>
+              PAN: {BILLER.pan}
+            </div>
+          )}
         </div>
       </div>
 

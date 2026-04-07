@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Client {
@@ -30,6 +31,7 @@ model Invoice {
   dueDate       DateTime
   totalAmount   Float     @default(0)
   notes         String?
+  showPan       Boolean   @default(true)
   createdAt     DateTime  @default(now())
   services      Service[]
 }
