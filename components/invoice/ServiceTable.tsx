@@ -46,32 +46,32 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
   return (
     <div className="space-y-2">
       {/* Desktop column header */}
-      <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">
-        <span className="flex-1">Description</span>
+      <div className="hidden sm:flex items-center gap-2 text-[12px] font-bold text-muted uppercase tracking-wide px-1">
+        <span className="flex-1 pl-[12px]">Description</span>
         <span className="w-16 text-center">Qty</span>
-        <span className="w-24 text-right">Rate (₹)</span>
+        <span className="w-24 text-right pr-[12px]">Rate (₹)</span>
         <span className="w-8" />
       </div>
 
       {services.map((row, index) => (
         <div key={row.id}>
           {/* ── Desktop row ── */}
-          <div className="hidden sm:flex items-center gap-2 bg-white border border-gray-100 rounded-xl px-3 py-2">
+          <div className="hidden sm:flex items-center gap-2 px-1 py-1">
             <input
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
+              className="flex-1 border border-hairline rounded-sm px-[12px] py-[10px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
               placeholder="e.g. Logo Design"
               value={row.description}
               onChange={(e) => update(index, 'description', e.target.value)}
             />
             <input
-              className="w-16 border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-center focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all"
+              className="w-16 border border-hairline rounded-sm px-[12px] py-[10px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [appearance:textfield]"
               type="number"
               min={1}
               value={row.qty}
               onChange={(e) => update(index, 'qty', Number(e.target.value))}
             />
             <input
-              className="w-24 border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-right focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all"
+              className="w-24 border border-hairline rounded-sm px-[12px] py-[10px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all text-right [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [appearance:textfield]"
               type="number"
               min={0}
               step={0.01}
@@ -81,7 +81,7 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
             <button
               type="button"
               onClick={() => removeRow(index)}
-              className="w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+              className="w-8 h-8 flex items-center justify-center text-muted hover:text-brand-active hover:bg-hairline-soft rounded-full transition-all"
               title="Remove row"
               disabled={services.length === 1}
             >
@@ -90,11 +90,11 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
           </div>
 
           {/* ── Mobile card ── */}
-          <div className="sm:hidden bg-white border border-gray-100 rounded-2xl p-4 space-y-3">
+          <div className="sm:hidden space-y-3 py-4 border-b border-hairline last:border-0">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Description</label>
+              <label className="text-[14px] font-medium text-muted">Description</label>
               <input
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
+                className="w-full border border-hairline rounded-sm px-[12px] py-[10px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
                 placeholder="e.g. Logo Design"
                 value={row.description}
                 onChange={(e) => update(index, 'description', e.target.value)}
@@ -102,9 +102,9 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
             </div>
             <div className="flex gap-3 items-end">
               <div className="flex-1 space-y-1">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Qty</label>
+                <label className="block text-[14px] font-medium text-muted">Qty</label>
                 <input
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base text-center focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all"
+                  className="w-full border border-hairline rounded-sm px-[12px] py-[10px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [appearance:textfield]"
                   type="number"
                   min={1}
                   value={row.qty}
@@ -112,9 +112,9 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
                 />
               </div>
               <div className="flex-1 space-y-1">
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Rate (₹)</label>
+                <label className="block text-[14px] font-medium text-muted">Rate (₹)</label>
                 <input
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base text-right focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all"
+                  className="w-full border border-hairline rounded-sm px-[12px] py-[10px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all text-right [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [appearance:textfield]"
                   type="number"
                   min={0}
                   step={0.01}
@@ -126,7 +126,7 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
                 <button
                   type="button"
                   onClick={() => removeRow(index)}
-                  className="w-11 h-11 flex items-center justify-center text-red-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all border border-red-50"
+                  className="w-11 h-11 flex items-center justify-center text-muted hover:text-brand-active hover:bg-hairline-soft rounded-full transition-all border border-transparent"
                   title="Remove row"
                   disabled={services.length === 1}
                 >
@@ -134,9 +134,9 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
                 </button>
               </div>
             </div>
-            <div className="flex justify-between items-center pt-1 border-t border-gray-50 text-xs text-gray-400">
+            <div className="flex justify-between items-center pt-2 border-t border-hairline text-[14px] text-muted">
               <span>Line Total</span>
-              <span className="font-semibold text-gray-700">₹{row.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+              <span className="font-semibold text-ink">₹{row.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
       <button
         type="button"
         onClick={addRow}
-        className="flex items-center gap-1 text-sm text-green-700 hover:text-green-900 font-medium mt-1 transition-colors"
+        className="flex items-center gap-1 text-[14px] text-brand-primary hover:text-brand-active font-medium mt-2 transition-colors"
       >
         <span className="material-symbols-outlined text-[18px]">add</span>
         Add line item

@@ -29,17 +29,23 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json();
-    const { name, address, email, phone, gstin } = body as {
+    const { name, address, email, phone, gstin, cin, bankName, accountName, accountNumber, ifsc, branch } = body as {
       name: string;
       address: string;
       email?: string;
       phone?: string;
       gstin?: string;
+      cin?: string;
+      bankName?: string;
+      accountName?: string;
+      accountNumber?: string;
+      ifsc?: string;
+      branch?: string;
     };
 
     const client = await prisma.client.update({
       where: { id },
-      data: { name, address, email, phone, gstin },
+      data: { name, address, email, phone, gstin, cin, bankName, accountName, accountNumber, ifsc, branch },
     });
     return NextResponse.json(client);
   } catch (error) {

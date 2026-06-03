@@ -11,12 +11,19 @@ export interface InvoiceData {
   dueDate: string;
   notes?: string;
   showPan?: boolean;
+  showClientBankDetails?: boolean;
   client: {
     name: string;
     address: string;
     email?: string | null;
     phone?: string | null;
     gstin?: string | null;
+    cin?: string | null;
+    bankName?: string | null;
+    accountName?: string | null;
+    accountNumber?: string | null;
+    ifsc?: string | null;
+    branch?: string | null;
   };
   services: ServiceRow[];
 }
@@ -49,7 +56,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
         background: '#fff',
         fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
         fontSize: '9.5pt',
-        color: '#1a1a1a',
+        color: '#222222',
         boxSizing: 'border-box',
         position: 'relative',
         display: 'flex',
@@ -89,6 +96,17 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
           {data.client.gstin && (
             <div style={{ color: '#555', fontSize: '8.5pt' }}>
               GSTIN: {data.client.gstin}
+            </div>
+          )}
+          {data.showClientBankDetails && (
+            <div style={{ marginTop: '2mm', paddingTop: '2mm', borderTop: '1px solid #eee' }}>
+              <div style={{ fontWeight: 600, fontSize: '9pt', color: '#333', marginBottom: '1mm' }}>Client Bank Details</div>
+              {data.client.cin && <div style={{ color: '#555', fontSize: '8.5pt' }}>CIN: {data.client.cin}</div>}
+              {data.client.bankName && <div style={{ color: '#555', fontSize: '8.5pt' }}>Bank Name: {data.client.bankName}</div>}
+              {data.client.accountName && <div style={{ color: '#555', fontSize: '8.5pt' }}>Account Name: {data.client.accountName}</div>}
+              {data.client.accountNumber && <div style={{ color: '#555', fontSize: '8.5pt' }}>Account No.: {data.client.accountNumber}</div>}
+              {data.client.ifsc && <div style={{ color: '#555', fontSize: '8.5pt' }}>IFSC Code: {data.client.ifsc}</div>}
+              {data.client.branch && <div style={{ color: '#555', fontSize: '8.5pt' }}>Branch: {data.client.branch}</div>}
             </div>
           )}
         </div>
@@ -169,9 +187,9 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
               ))}
             </tbody>
             <tfoot>
-              <tr style={{ backgroundColor: '#F9FAFB' }}>
-                <td colSpan={2} style={{ padding: '3.5mm 3mm', color: '#2563EB', fontWeight: 700, fontSize: '10pt' }}>Total due</td>
-                <td colSpan={2} style={{ padding: '3.5mm 3mm', textAlign: 'right', color: '#2563EB', fontWeight: 700, fontSize: '11pt' }}>
+              <tr style={{ backgroundColor: '#F7F7F7' }}>
+                <td colSpan={2} style={{ padding: '3.5mm 3mm', color: '#222222', fontWeight: 700, fontSize: '10pt' }}>Total due</td>
+                <td colSpan={2} style={{ padding: '3.5mm 3mm', textAlign: 'right', color: '#222222', fontWeight: 700, fontSize: '11pt' }}>
                   INR ₹ {total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </td>
               </tr>

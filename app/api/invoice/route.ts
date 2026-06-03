@@ -20,16 +20,18 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { clientId, date, dueDate, notes, showPan, services } = body as {
+    const { clientId, date, dueDate, notes, showPan, showClientBankDetails, services, customInvoiceNumber } = body as {
       clientId: string;
       date: string;
       dueDate: string;
       notes?: string;
       showPan?: boolean;
+      showClientBankDetails?: boolean;
       services: { description: string; qty: number; rate: number; total: number }[];
+      customInvoiceNumber?: string;
     };
 
-    const invoiceNumber = await generateInvoiceNumber();
+    const invoiceNumber = customInvoiceNumber?.trim() ? customInvoiceNumber.trim() : await generateInvoiceNumber();
     const totalAmount = services.reduce((sum, s) => sum + s.total, 0);
 
     const invoice = await prisma.invoice.create({
@@ -41,6 +43,7 @@ export async function POST(req: NextRequest) {
         totalAmount,
         notes,
         showPan: showPan ?? true,
+        showClientBankDetails: showClientBankDetails ?? false,
         services: {
           create: services.map((s) => ({
             description: s.description,

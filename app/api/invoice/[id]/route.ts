@@ -22,13 +22,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params;
     const body = await req.json();
-    const { clientId, date, dueDate, notes, showPan, services } = body as {
+    const { clientId, date, dueDate, notes, showPan, showClientBankDetails, services, customInvoiceNumber } = body as {
       clientId: string;
       date: string;
       dueDate: string;
       notes?: string;
       showPan?: boolean;
-      services: { description: string; qty: number; rate: number; total: number }[];
+      showClientBankDetails?: boolean;
+      services: { id?: string; description: string; qty: number; rate: number; total: number }[];
+      customInvoiceNumber?: string;
     };
 
     const totalAmount = services.reduce((sum, s) => sum + s.total, 0);
@@ -36,24 +38,31 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     // Delete old services and recreate
     await prisma.service.deleteMany({ where: { invoiceId: id } });
 
+    const updateData: any = {
+      clientId,
+      date: new Date(date),
+      dueDate: new Date(dueDate),
+      totalAmount,
+      notes,
+      showPan: showPan ?? true,
+      showClientBankDetails: showClientBankDetails ?? false,
+      services: {
+        create: services.map((s) => ({
+          description: s.description,
+          qty: s.qty,
+          rate: s.rate,
+          total: s.total,
+        })),
+      },
+    };
+
+    if (customInvoiceNumber?.trim()) {
+      updateData.invoiceNumber = customInvoiceNumber.trim();
+    }
+
     const invoice = await prisma.invoice.update({
       where: { id },
-      data: {
-        clientId,
-        date: new Date(date),
-        dueDate: new Date(dueDate),
-        totalAmount,
-        notes,
-        showPan: showPan ?? true,
-        services: {
-          create: services.map((s) => ({
-            description: s.description,
-            qty: s.qty,
-            rate: s.rate,
-            total: s.total,
-          })),
-        },
-      },
+      data: updateData,
       include: { services: true, client: true },
     });
 

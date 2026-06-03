@@ -11,6 +11,12 @@ interface Client {
   email?: string | null;
   phone?: string | null;
   gstin?: string | null;
+  cin?: string | null;
+  bankName?: string | null;
+  accountName?: string | null;
+  accountNumber?: string | null;
+  ifsc?: string | null;
+  branch?: string | null;
 }
 
 export default function ClientsPage() {
@@ -18,7 +24,7 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [formData, setFormData] = useState({ name: '', address: '', email: '', phone: '', gstin: '' });
+  const [formData, setFormData] = useState({ name: '', address: '', email: '', phone: '', gstin: '', cin: '', bankName: '', accountName: '', accountNumber: '', ifsc: '', branch: '' });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -45,6 +51,12 @@ export default function ClientsPage() {
       email: client.email || '',
       phone: client.phone || '',
       gstin: client.gstin || '',
+      cin: client.cin || '',
+      bankName: client.bankName || '',
+      accountName: client.accountName || '',
+      accountNumber: client.accountNumber || '',
+      ifsc: client.ifsc || '',
+      branch: client.branch || '',
     });
     setShowAddModal(true);
   };
@@ -78,7 +90,7 @@ export default function ClientsPage() {
       if (!res.ok) throw new Error();
       
       toast.success(editingClient ? 'Client updated successfully' : 'Client added successfully');
-      setFormData({ name: '', address: '', email: '', phone: '', gstin: '' });
+      setFormData({ name: '', address: '', email: '', phone: '', gstin: '', cin: '', bankName: '', accountName: '', accountNumber: '', ifsc: '', branch: '' });
       setEditingClient(null);
       setShowAddModal(false);
       fetchClients();
@@ -91,26 +103,25 @@ export default function ClientsPage() {
 
   const openNewModal = () => {
     setEditingClient(null);
-    setFormData({ name: '', address: '', email: '', phone: '', gstin: '' });
+    setFormData({ name: '', address: '', email: '', phone: '', gstin: '', cin: '', bankName: '', accountName: '', accountNumber: '', ifsc: '', branch: '' });
     setShowAddModal(true);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-canvas">
+      <header className="bg-canvas border-b border-hairline h-[80px] flex items-center">
+        <div className="w-full max-w-5xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-gray-400 hover:text-gray-600 transition-colors">
-              <span className="material-symbols-outlined">arrow_back</span>
+            <Link href="/dashboard" className="w-[32px] h-[32px] flex items-center justify-center bg-surface-strong text-ink rounded-full hover:bg-hairline-soft transition-colors">
+              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             </Link>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Clients</h1>
-              <p className="text-xs text-gray-400 mt-0.5">Manage your customer database</p>
+              <h1 className="text-[21px] font-bold text-ink leading-[1.43] tracking-normal">Clients</h1>
             </div>
           </div>
           <button
             onClick={openNewModal}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition-colors shadow-sm"
+            className="flex items-center gap-2 px-[24px] py-[14px] bg-brand-primary text-white text-[16px] font-medium leading-[1.25] rounded-sm hover:bg-brand-active transition-colors"
           >
             <span className="material-symbols-outlined text-[18px]">person_add</span>
             <span className="hidden sm:inline">New Client</span>
@@ -118,21 +129,21 @@ export default function ClientsPage() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-6 py-16">
         {loading ? (
           <div className="flex justify-center py-24">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
           </div>
         ) : clients.length === 0 ? (
-          <div className="text-center py-24 bg-white rounded-2xl border border-dashed border-gray-300">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-green-50 rounded-2xl mb-4">
-              <span className="material-symbols-outlined text-[28px] text-green-600">group</span>
+          <div className="text-center py-24 bg-canvas rounded-md border border-hairline">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-surface-soft rounded-full mb-4">
+              <span className="material-symbols-outlined text-[28px] text-brand-primary">group</span>
             </div>
-            <h2 className="text-lg font-semibold text-gray-700 mb-1">No clients yet</h2>
-            <p className="text-sm text-gray-400 mb-6">Add your first client to start creating invoices.</p>
+            <h2 className="text-[20px] font-semibold text-ink leading-[1.20] tracking-[-0.18px] mb-1">No clients yet</h2>
+            <p className="text-[16px] text-body leading-[1.5] mb-6">Add your first client to start creating invoices.</p>
             <button
               onClick={openNewModal}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition-colors"
+              className="inline-flex items-center justify-center px-[24px] py-[14px] bg-brand-primary text-white text-[16px] font-medium rounded-sm hover:bg-brand-active transition-colors h-[48px]"
             >
               Add Client
             </button>
@@ -142,20 +153,20 @@ export default function ClientsPage() {
             {clients.map((client) => (
               <div
                 key={client.id}
-                className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-green-200 hover:shadow-md transition-all duration-200 group relative"
+                className="bg-canvas rounded-md border border-hairline p-6 hover:shadow-card transition-shadow duration-200 group relative"
               >
                 {/* Actions */}
                 <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button 
                     onClick={() => handleEditClick(client)}
-                    className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-green-50 hover:text-green-600 flex items-center justify-center transition-colors"
+                    className="w-8 h-8 rounded-full bg-surface-strong text-ink hover:bg-hairline-soft flex items-center justify-center transition-colors"
                     title="Edit Client"
                   >
                     <span className="material-symbols-outlined text-[16px]">edit</span>
                   </button>
                   <button 
                     onClick={() => handleDeleteClient(client.id, client.name)}
-                    className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-colors"
+                    className="w-8 h-8 rounded-full bg-surface-strong text-ink hover:bg-brand-disabled hover:text-brand-active flex items-center justify-center transition-colors"
                     title="Delete Client"
                   >
                     <span className="material-symbols-outlined text-[16px]">delete</span>
@@ -164,38 +175,38 @@ export default function ClientsPage() {
 
                 {/* Avatar + Name */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-base font-bold text-green-700">
+                  <div className="w-10 h-10 rounded-full bg-surface-strong flex items-center justify-center flex-shrink-0">
+                    <span className="text-[16px] font-bold text-ink">
                       {client.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="min-w-0 pr-12">
-                    <p className="text-sm font-bold text-gray-900 truncate">{client.name}</p>
+                    <p className="text-[16px] font-medium text-ink truncate">{client.name}</p>
                   </div>
                 </div>
 
-                <div className="space-y-2 text-xs text-gray-500">
+                <div className="space-y-2 text-[14px] text-body">
                   {client.email && (
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[14px] text-gray-300 flex-shrink-0">mail</span>
+                      <span className="material-symbols-outlined text-[14px] text-muted flex-shrink-0">mail</span>
                       <span className="truncate">{client.email}</span>
                     </div>
                   )}
                   {client.phone && (
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[14px] text-gray-300 flex-shrink-0">call</span>
+                      <span className="material-symbols-outlined text-[14px] text-muted flex-shrink-0">call</span>
                       <span>{client.phone}</span>
                     </div>
                   )}
                   {client.gstin && (
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[14px] text-gray-300 flex-shrink-0">receipt_long</span>
+                      <span className="material-symbols-outlined text-[14px] text-muted flex-shrink-0">receipt_long</span>
                       <span>GSTIN: {client.gstin}</span>
                     </div>
                   )}
                   {client.address && (
                     <div className="flex items-start gap-2">
-                      <span className="material-symbols-outlined text-[14px] text-gray-300 flex-shrink-0 mt-0.5">location_on</span>
+                      <span className="material-symbols-outlined text-[14px] text-muted flex-shrink-0 mt-0.5">location_on</span>
                       <span className="line-clamp-2">{client.address}</span>
                     </div>
                   )}
@@ -205,93 +216,155 @@ export default function ClientsPage() {
 
             <button
               onClick={openNewModal}
-              className="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-5 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-green-300 hover:text-green-600 transition-all duration-200 min-h-[160px]"
+              className="bg-canvas rounded-md border border-hairline p-6 flex flex-col items-center justify-center gap-2 text-muted hover:border-ink hover:text-ink transition-all duration-200 min-h-[160px]"
             >
               <span className="material-symbols-outlined text-[28px]">add_circle</span>
-              <span className="text-sm font-semibold">Add Client</span>
+              <span className="text-[14px] font-medium">Add Client</span>
             </button>
           </div>
         )}
       </main>
 
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-stretch sm:justify-end overflow-hidden">
+          <div className="bg-canvas rounded-t-[24px] sm:rounded-none w-full sm:w-[640px] sm:max-w-[90vw] shadow-card flex flex-col max-h-[90vh] sm:max-h-full sm:h-full animate-in slide-in-from-bottom-full sm:slide-in-from-right-full duration-300">
+            <div className="px-6 py-5 border-b border-hairline flex justify-between items-center flex-shrink-0 sticky top-0 bg-canvas z-10 rounded-t-[24px] sm:rounded-none">
               <div>
-                <h3 className="text-lg font-bold text-gray-900">
+                <h3 className="text-[20px] font-semibold text-ink leading-[1.2]">
                   {editingClient ? 'Edit Client' : 'Add New Client'}
                 </h3>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">
-                  {editingClient ? 'Update information' : 'Customer Information'}
-                </p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+                className="w-8 h-8 flex items-center justify-center bg-canvas rounded-full text-ink hover:bg-surface-strong transition-colors"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-symbols-outlined text-[18px]">close</span>
               </button>
             </div>
-            <form onSubmit={handleFormSubmit} className="p-6 sm:p-8 space-y-5">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">Full Name</label>
+            <div className="overflow-y-auto flex-1">
+              <form onSubmit={handleFormSubmit} className="p-6 sm:p-8 space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="space-y-1.5">
+                <label className="block text-[14px] font-medium text-muted mb-1">Full Name</label>
                 <input
                   autoFocus
                   required
                   placeholder="e.g. SkillBytes LLC"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
+                  className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[14px] font-medium text-muted mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="contact@company.com"
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[14px] font-medium text-muted mb-1">Phone Number</label>
+                    <input
+                      placeholder="+1 (555) 000-0000"
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[14px] font-medium text-muted mb-1">GSTIN</label>
+                    <input
+                      placeholder="e.g. 29ABCDE1234F1Z5"
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
+                      value={formData.gstin}
+                      onChange={(e) => setFormData({ ...formData, gstin: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <label className="block text-[14px] font-medium text-muted mb-1">Address</label>
+                    <textarea
+                      required
+                      rows={2}
+                      placeholder="Company HQ Address..."
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all resize-none placeholder:text-muted"
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+              {/* Bank Details Section */}
+              <div className="pt-6 mt-6 border-t border-hairline">
+                <h4 className="text-[16px] font-bold text-ink mb-4">Bank Details (Optional)</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="space-y-1.5">
+                    <label className="block text-[14px] font-medium text-muted mb-1">CIN Number</label>
+                    <input
+                      placeholder="e.g. U12345DL2023PTC123456"
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
+                      value={formData.cin}
+                      onChange={(e) => setFormData({ ...formData, cin: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[14px] font-medium text-muted mb-1">Bank Name</label>
+                    <input
+                      placeholder="e.g. HDFC Bank"
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
+                      value={formData.bankName}
+                      onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[14px] font-medium text-muted mb-1">Account Name</label>
+                    <input
+                      placeholder="Company Account Name"
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
+                      value={formData.accountName}
+                      onChange={(e) => setFormData({ ...formData, accountName: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[14px] font-medium text-muted mb-1">Account Number</label>
+                    <input
+                      placeholder="Account Number"
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
+                      value={formData.accountNumber}
+                      onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[14px] font-medium text-muted mb-1">IFSC Code</label>
+                    <input
+                      placeholder="IFSC Code"
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
+                      value={formData.ifsc}
+                      onChange={(e) => setFormData({ ...formData, ifsc: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[14px] font-medium text-muted mb-1">Branch</label>
+                    <input
+                      placeholder="Branch Name"
+                      className="w-full border border-hairline rounded-sm px-[12px] py-[14px] h-[56px] text-ink focus:ring-0 focus:border-ink focus:border-2 outline-none transition-all placeholder:text-muted"
+                      value={formData.branch}
+                      onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="contact@company.com"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">Phone Number</label>
-                <input
-                  placeholder="+1 (555) 000-0000"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">GSTIN</label>
-                <input
-                  placeholder="e.g. 29ABCDE1234F1Z5"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
-                  value={formData.gstin}
-                  onChange={(e) => setFormData({ ...formData, gstin: e.target.value })}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">Address</label>
-                <textarea
-                  required
-                  rows={3}
-                  placeholder="Company HQ Address..."
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all resize-none placeholder:text-gray-300"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                />
-              </div>
-              <button
-                disabled={saving}
-                type="submit"
-                className="w-full py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors shadow-lg shadow-green-200 disabled:opacity-50"
-              >
-                {saving ? (editingClient ? 'Updating...' : 'Adding...') : (editingClient ? 'Update Client' : 'Add Client')}
-              </button>
-            </form>
+                <button
+                  disabled={saving}
+                  type="submit"
+                  className="w-full h-[48px] bg-brand-primary text-white text-[16px] font-medium rounded-sm hover:bg-brand-active transition-colors disabled:bg-brand-disabled mt-4"
+                >
+                  {saving ? (editingClient ? 'Updating...' : 'Adding...') : (editingClient ? 'Update Client' : 'Add Client')}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       )}

@@ -14,6 +14,12 @@ interface Client {
   email?: string | null;
   phone?: string | null;
   gstin?: string | null;
+  cin?: string | null;
+  bankName?: string | null;
+  accountName?: string | null;
+  accountNumber?: string | null;
+  ifsc?: string | null;
+  branch?: string | null;
 }
 
 interface InvoiceFormProps {
@@ -24,6 +30,8 @@ interface InvoiceFormProps {
     date: string;
     dueDate: string;
     notes: string;
+    showPan?: boolean;
+    showClientBankDetails?: boolean;
     services: ServiceRow[];
   };
   clients: Client[];
@@ -49,14 +57,17 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   const [clientId, setClientId] = useState('');
   const [date, setDate] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [customInvoiceNumber, setCustomInvoiceNumber] = useState('');
   const [notes, setNotes] = useState('');
   const [showPan, setShowPan] = useState(true);
+  const [showClientBankDetails, setShowClientBankDetails] = useState(false);
   const [services, setServices] = useState<ServiceRow[]>([]);
 
   // Initialize on mount
   React.useEffect(() => {
     setClientId(initialData?.clientId ?? '');
     setDate(initialData?.date ?? new Date().toISOString().split('T')[0]);
+    setCustomInvoiceNumber(invoiceNumber ?? '');
     
     if (initialData?.dueDate) {
       setDueDate(initialData.dueDate);
@@ -67,6 +78,8 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     }
     
     setNotes(initialData?.notes ?? '');
+    if (initialData?.showPan !== undefined) setShowPan(initialData.showPan);
+    setShowClientBankDetails(initialData?.showClientBankDetails ?? false);
     setServices(initialData?.services ?? [{ id: generateId(), description: '', qty: 1, rate: 0, total: 0 }]);
     setMounted(true);
   }, [initialData]);
@@ -80,23 +93,30 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   };
 
   // New client state
-  const [newClient, setNewClient] = useState({ name: '', address: '', email: '', phone: '', gstin: '' });
+  const [newClient, setNewClient] = useState({ name: '', address: '', email: '', phone: '', gstin: '', cin: '', bankName: '', accountName: '', accountNumber: '', ifsc: '', branch: '' });
 
   const selectedClient = clients.find((c) => c.id === clientId);
   const total = services.reduce((sum, s) => sum + s.total, 0);
 
   const invoiceData: InvoiceData = {
-    invoiceNumber: invoiceNumber ?? '',
+    invoiceNumber: customInvoiceNumber || (invoiceNumber ?? 'Auto-generated'),
     date,
     dueDate,
     notes,
     showPan,
+    showClientBankDetails,
     client: {
       name: selectedClient?.name ?? '',
       address: selectedClient?.address ?? '',
       email: selectedClient?.email ?? '',
       phone: selectedClient?.phone ?? '',
       gstin: selectedClient?.gstin ?? '',
+      cin: selectedClient?.cin ?? '',
+      bankName: selectedClient?.bankName ?? '',
+      accountName: selectedClient?.accountName ?? '',
+      accountNumber: selectedClient?.accountNumber ?? '',
+      ifsc: selectedClient?.ifsc ?? '',
+      branch: selectedClient?.branch ?? '',
     },
     services,
   };
@@ -115,7 +135,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
       setClients((prev) => [...prev, created]);
       setClientId(created.id);
       setShowNewClient(false);
-      setNewClient({ name: '', address: '', email: '', phone: '', gstin: '' });
+      setNewClient({ name: '', address: '', email: '', phone: '', gstin: '', cin: '', bankName: '', accountName: '', accountNumber: '', ifsc: '', branch: '' });
     } catch {
       setError('Failed to create client.');
     }
@@ -128,7 +148,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     setError('');
     setSaving(true);
     try {
-      const payload = { clientId, date, dueDate, notes, showPan, services };
+      const payload = { clientId, date, dueDate, notes, showPan, showClientBankDetails, services, customInvoiceNumber };
       const res = invoiceId
         ? await fetch(`/api/invoice/${invoiceId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         : await fetch('/api/invoice', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -141,7 +161,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     } finally {
       setSaving(false);
     }
-  }, [clientId, date, dueDate, notes, showPan, services, invoiceId, router]);
+  }, [clientId, date, dueDate, notes, showPan, showClientBankDetails, services, invoiceId, router, customInvoiceNumber]);
 
   // ─── Download PDF ──────────────────────────────────────────────────────────
   const handleDownload = () => {
@@ -209,7 +229,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   const handleDuplicate = useCallback(async () => {
     setSaving(true);
     try {
-      const payload = { clientId, date, dueDate, notes, showPan, services };
+      const payload = { clientId, date, dueDate, notes, showPan, showClientBankDetails, services, customInvoiceNumber };
       const res = await fetch('/api/invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -223,7 +243,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     } finally {
       setSaving(false);
     }
-  }, [clientId, date, dueDate, notes, showPan, services, router]);
+  }, [clientId, date, dueDate, notes, showPan, showClientBankDetails, services, router, customInvoiceNumber]);
 
   // ─── Render ────────────────────────────────────────────────────────────────
   if (!mounted) {
@@ -235,17 +255,15 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" suppressHydrationWarning>
+    <div className="min-h-screen bg-surface-soft" suppressHydrationWarning>
       {/* Top bar */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200" suppressHydrationWarning>
-        <div className="max-w-screen-xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <button onClick={() => router.push('/dashboard')} className="text-gray-400 hover:text-gray-600 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
+      <header className="sticky top-0 z-40 bg-canvas border-b border-hairline h-[80px] flex items-center" suppressHydrationWarning>
+        <div className="w-full max-w-screen-xl mx-auto px-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
+            <button onClick={() => router.push('/dashboard')} className="w-[32px] h-[32px] flex items-center justify-center bg-surface-strong text-ink rounded-full hover:bg-hairline-soft transition-colors">
+              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             </button>
-            <h1 className="font-semibold text-gray-800 text-sm sm:text-base">
+            <h1 className="text-[21px] font-bold text-ink leading-[1.43] tracking-normal">
               {invoiceId ? `Edit — ${invoiceNumber}` : 'New Invoice'}
             </h1>
           </div>
@@ -255,29 +273,25 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
               <button
                 onClick={handleDuplicate}
                 disabled={saving}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="hidden sm:flex items-center gap-1.5 px-[24px] py-[14px] text-[16px] font-medium text-ink bg-canvas border border-ink rounded-sm hover:bg-surface-soft transition-colors h-[48px]"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
+                <span className="material-symbols-outlined text-[18px]">content_copy</span>
                 Duplicate
               </button>
             )}
             {invoiceNumber && (
               <button
                 onClick={handleDownload}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-gray-700 rounded-lg hover:bg-gray-800 transition-colors"
+                className="hidden sm:flex items-center gap-1.5 px-[24px] py-[14px] text-[16px] font-medium text-ink bg-canvas border border-hairline rounded-sm hover:bg-surface-soft transition-colors h-[48px]"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
+                <span className="material-symbols-outlined text-[18px]">download</span>
                 PDF
               </button>
             )}
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-60"
+              className="flex items-center justify-center px-[24px] py-[14px] text-[16px] font-medium text-white bg-brand-primary rounded-sm hover:bg-brand-active transition-colors disabled:bg-brand-disabled h-[48px] w-[100px]"
             >
               {saving ? 'Saving...' : 'Save'}
             </button>
@@ -285,16 +299,16 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
         </div>
 
         {/* Mobile toggle */}
-        <div className="lg:hidden flex border-t border-gray-200">
+        <div className="lg:hidden flex border-t border-hairline w-full px-6">
           <button
             onClick={() => setMobileView('form')}
-            className={`flex-1 py-2 text-xs font-medium transition-colors ${mobileView === 'form' ? 'text-green-700 border-b-2 border-green-600 bg-green-50' : 'text-gray-500'}`}
+            className={`flex-1 py-4 text-[16px] font-medium transition-colors ${mobileView === 'form' ? 'text-ink border-b-2 border-ink' : 'text-muted'}`}
           >
             Form
           </button>
           <button
             onClick={() => setMobileView('preview')}
-            className={`flex-1 py-2 text-xs font-medium transition-colors ${mobileView === 'preview' ? 'text-green-700 border-b-2 border-green-600 bg-green-50' : 'text-gray-500'}`}
+            className={`flex-1 py-4 text-[16px] font-medium transition-colors ${mobileView === 'preview' ? 'text-ink border-b-2 border-ink' : 'text-muted'}`}
           >
             Preview
           </button>
@@ -312,16 +326,21 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
         <div className={`w-full lg:w-[420px] xl:w-[480px] flex-shrink-0 space-y-5 ${mobileView === 'preview' ? 'hidden lg:block' : ''}`}>
           <div className="flex flex-col gap-8">
             {/* Client Selection */}
-            <section className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4 shadow-sm">
-              <h2 className="text-sm font-bold text-gray-700 uppercase tracking-widest ml-1">Client</h2>
+            <section className="bg-canvas rounded-md border border-hairline p-6 space-y-4 shadow-none">
+              <h2 className="text-[14px] font-medium text-muted uppercase tracking-wide">Client</h2>
               <select
                 value={clientId}
                 onChange={(e) => {
-                  if (e.target.value === '__new') { setShowNewClient(true); return; }
+                  if (e.target.value === 'new') {
+                    setClientId('');
+                    setShowNewClient(true);
+                    return;
+                  }
                   setClientId(e.target.value);
                   setShowNewClient(false);
                 }}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all"
+                className="w-full border border-hairline rounded-sm px-[12px] py-[12px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all bg-canvas appearance-none"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236a6a6a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
               >
                 <option value="">— Select client —</option>
                 {clients.map((c) => (
@@ -331,45 +350,81 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
               </select>
 
               {showNewClient && (
-                <div className="space-y-3 pt-4 border-t border-gray-100 animate-in slide-in-from-top-2 duration-300">
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-1">New client details</p>
+                <div className="space-y-3 pt-4 border-t border-hairline animate-in slide-in-from-top-2 duration-300">
+                  <p className="text-[12px] font-bold text-muted uppercase tracking-wide">New client details</p>
                   <input
                     placeholder="Full name *"
                     value={newClient.name}
                     onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
                   />
                   <textarea
                     placeholder="Address"
                     rows={2}
                     value={newClient.address}
                     onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all resize-none placeholder:text-gray-300"
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all resize-none placeholder:text-muted"
                   />
                   <input
                     placeholder="Email"
                     type="email"
                     value={newClient.email}
                     onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
                   />
                   <input
                     placeholder="Phone"
                     value={newClient.phone}
                     onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
                   />
                   <input
                     placeholder="GSTIN"
                     value={newClient.gstin}
                     onChange={(e) => setNewClient({ ...newClient, gstin: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all placeholder:text-gray-300"
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
                   />
-                  <div className="flex gap-3 pt-1">
+                  <input
+                    placeholder="CIN Number"
+                    value={newClient.cin}
+                    onChange={(e) => setNewClient({ ...newClient, cin: e.target.value })}
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
+                  />
+                  <input
+                    placeholder="Bank Name"
+                    value={newClient.bankName}
+                    onChange={(e) => setNewClient({ ...newClient, bankName: e.target.value })}
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
+                  />
+                  <input
+                    placeholder="Account Name"
+                    value={newClient.accountName}
+                    onChange={(e) => setNewClient({ ...newClient, accountName: e.target.value })}
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
+                  />
+                  <input
+                    placeholder="Account Number"
+                    value={newClient.accountNumber}
+                    onChange={(e) => setNewClient({ ...newClient, accountNumber: e.target.value })}
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
+                  />
+                  <input
+                    placeholder="IFSC Code"
+                    value={newClient.ifsc}
+                    onChange={(e) => setNewClient({ ...newClient, ifsc: e.target.value })}
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
+                  />
+                  <input
+                    placeholder="Branch"
+                    value={newClient.branch}
+                    onChange={(e) => setNewClient({ ...newClient, branch: e.target.value })}
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all placeholder:text-muted"
+                  />
+                  <div className="flex gap-3 pt-3">
                     <button
                       type="button"
                       onClick={handleCreateClient}
-                      className="flex-1 py-3 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors shadow-lg shadow-green-100"
+                      className="flex-1 h-[48px] text-[16px] font-medium text-white bg-brand-primary rounded-sm hover:bg-brand-active transition-colors shadow-none"
                     >
                       Save Client
                     </button>
@@ -386,64 +441,63 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
             </section>
 
             {/* Dates */}
-            <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-4 shadow-sm">
-              <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Dates</h2>
+            <section className="bg-canvas rounded-md border border-hairline p-6 space-y-4 shadow-none">
+              <h2 className="text-[14px] font-medium text-muted uppercase tracking-wide">Dates</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">Invoice Date</label>
+                  <label className="block text-[14px] font-medium text-muted mb-1">Invoice Date</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => handleDateChange(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all"
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all bg-canvas"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-tight ml-1">Due Date</label>
+                  <label className="block text-[14px] font-medium text-muted mb-1">Due Date</label>
                   <input
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all"
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all bg-canvas"
                   />
                 </div>
               </div>
             </section>
 
             {/* Services */}
-            <section className="bg-white rounded-xl border border-gray-200 p-6 space-y-4 shadow-sm">
-              <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Services</h2>
+            <section className="bg-canvas rounded-md border border-hairline p-6 space-y-4 shadow-none">
+              <h2 className="text-[14px] font-medium text-muted uppercase tracking-wide">Services</h2>
               <ServiceTable services={services} onChange={setServices} />
-              <div className="flex justify-between items-center pt-3 border-t border-gray-100 text-sm font-semibold text-gray-700">
+              <div className="flex justify-between items-center pt-3 border-t border-hairline text-[16px] font-semibold text-ink">
                 <span>Total</span>
-                <span className="text-lg text-green-700 font-bold">₹{total.toFixed(2)}</span>
+                <span className="text-[21px] font-bold">₹{total.toFixed(2)}</span>
               </div>
             </section>
 
             {/* Notes */}
-            <section className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Notes</h2>
+            <section className="bg-canvas rounded-md border border-hairline p-6 shadow-none">
+              <h2 className="text-[14px] font-medium text-muted uppercase tracking-wide mb-3">Notes</h2>
               <textarea
                 rows={3}
                 placeholder="Payment terms, thank you note, etc."
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm focus:ring-4 focus:ring-green-100 focus:border-green-500 outline-none transition-all resize-none placeholder:text-gray-400"
+                className="w-full border border-hairline rounded-sm px-[12px] py-[14px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all resize-none placeholder:text-muted"
               />
             </section>
 
             {/* PAN Toggle */}
-            <section className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <section className="bg-canvas rounded-md border border-hairline p-6 shadow-none">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-semibold text-gray-700">Show PAN on Invoice</h2>
-                  <p className="text-xs text-gray-400 mt-0.5">PAN: AJUPB8140M</p>
+                  <h2 className="text-[16px] font-medium text-ink">Show PAN on Invoice</h2>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowPan((v) => !v)}
-                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                    showPan ? 'bg-green-600' : 'bg-gray-200'
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 ${
+                    showPan ? 'bg-brand-primary' : 'bg-hairline'
                   }`}
                   aria-label="Toggle PAN visibility"
                 >
@@ -455,10 +509,33 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
                 </button>
               </div>
               {!showPan && (
-                <p className="text-xs text-amber-600 mt-3 bg-amber-50 rounded-lg px-3 py-2">
+                <p className="text-[14px] text-body mt-3 bg-surface-soft rounded-sm px-4 py-3 border border-hairline">
                   PAN will be hidden from the invoice preview and PDF.
                 </p>
               )}
+            </section>
+
+            {/* Client Bank Details Toggle */}
+            <section className="bg-canvas rounded-md border border-hairline p-6 shadow-none">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-[16px] font-medium text-ink">Show Client Bank Details</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowClientBankDetails((v) => !v)}
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 ${
+                    showClientBankDetails ? 'bg-brand-primary' : 'bg-hairline'
+                  }`}
+                  aria-label="Toggle client bank details visibility"
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      showClientBankDetails ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
             </section>
 
             {/* Mobile action buttons */}
@@ -486,14 +563,14 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
 
         {/* ── PREVIEW ── */}
         <div className={`flex-1 ${mobileView === 'form' ? 'hidden lg:block' : ''}`}>
-          <div className="lg:sticky lg:top-24 bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm lg:shadow-none">
-            <div className="bg-gray-50 px-4 py-2 border-b border-gray-100 flex justify-between items-center sm:hidden">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Live Preview</span>
-              <span className="text-[10px] text-gray-400 italic">Scale to fit</span>
+          <div className="lg:sticky lg:top-24 bg-canvas rounded-md border border-hairline overflow-hidden shadow-none lg:shadow-none">
+            <div className="bg-surface-soft px-4 py-2 border-b border-hairline flex justify-between items-center sm:hidden">
+              <span className="text-[12px] font-bold text-muted uppercase tracking-widest">Live Preview</span>
+              <span className="text-[10px] text-muted italic">Scale to fit</span>
             </div>
-            <div className="overflow-auto p-4 flex justify-center bg-gray-100/50 min-h-[600px] lg:bg-transparent lg:p-0">
+            <div className="overflow-auto p-4 flex justify-center bg-surface-strong min-h-[600px] lg:bg-transparent lg:p-0">
               <div 
-                className="origin-top transition-transform duration-300 shadow-2xl lg:shadow-none mb-8 lg:mb-0" 
+                className="origin-top transition-transform duration-300 shadow-card lg:shadow-none mb-8 lg:mb-0" 
                 style={{ 
                   width: '210mm',
                 }}

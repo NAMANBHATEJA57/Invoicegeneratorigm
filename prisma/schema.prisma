@@ -17,9 +17,15 @@ model Client {
   address   String
   email     String?
   phone     String?
-  gstin     String?
-  createdAt DateTime  @default(now())
-  invoices  Invoice[]
+  gstin         String?
+  cin           String?
+  bankName      String?
+  accountName   String?
+  accountNumber String?
+  ifsc          String?
+  branch        String?
+  createdAt     DateTime  @default(now())
+  invoices      Invoice[]
 }
 
 model Invoice {
@@ -29,11 +35,12 @@ model Invoice {
   client        Client    @relation(fields: [clientId], references: [id])
   date          DateTime
   dueDate       DateTime
-  totalAmount   Float     @default(0)
-  notes         String?
-  showPan       Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  services      Service[]
+  totalAmount           Float     @default(0)
+  notes                 String?
+  showPan               Boolean   @default(true)
+  showClientBankDetails Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  services              Service[]
 }
 
 model Service {
