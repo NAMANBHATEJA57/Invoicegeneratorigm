@@ -38,7 +38,9 @@ model Invoice {
   totalAmount           Float     @default(0)
   notes                 String?
   showPan               Boolean   @default(true)
+  selectedPan           String?
   showClientBankDetails Boolean   @default(false)
+  billerId              String    @default("rupali")
   createdAt             DateTime  @default(now())
   services              Service[]
 }

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import ServiceTable, { ServiceRow } from './ServiceTable';
 import InvoicePreview, { InvoiceData } from './InvoicePreview';
+import { BILLERS } from '@/lib/biller';
 
 interface Client {
   id: string;
@@ -31,7 +32,9 @@ interface InvoiceFormProps {
     dueDate: string;
     notes: string;
     showPan?: boolean;
+    selectedPan?: string;
     showClientBankDetails?: boolean;
+    billerId?: string;
     services: ServiceRow[];
   };
   clients: Client[];
@@ -59,7 +62,9 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   const [dueDate, setDueDate] = useState('');
   const [customInvoiceNumber, setCustomInvoiceNumber] = useState('');
   const [notes, setNotes] = useState('');
+  const [billerId, setBillerId] = useState('rupali');
   const [showPan, setShowPan] = useState(true);
+  const [selectedPan, setSelectedPan] = useState(BILLERS[0].pan);
   const [showClientBankDetails, setShowClientBankDetails] = useState(false);
   const [services, setServices] = useState<ServiceRow[]>([]);
 
@@ -78,7 +83,9 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     }
     
     setNotes(initialData?.notes ?? '');
+    setBillerId(initialData?.billerId ?? 'rupali');
     if (initialData?.showPan !== undefined) setShowPan(initialData.showPan);
+    setSelectedPan(initialData?.selectedPan ?? BILLERS[0].pan);
     setShowClientBankDetails(initialData?.showClientBankDetails ?? false);
     setServices(initialData?.services ?? [{ id: generateId(), description: '', qty: 1, rate: 0, total: 0 }]);
     setMounted(true);
@@ -103,7 +110,9 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     date,
     dueDate,
     notes,
+    billerId,
     showPan,
+    selectedPan,
     showClientBankDetails,
     client: {
       name: selectedClient?.name ?? '',
@@ -148,20 +157,21 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
     setError('');
     setSaving(true);
     try {
-      const payload = { clientId, date, dueDate, notes, showPan, showClientBankDetails, services, customInvoiceNumber };
+      const payload = { clientId, date, dueDate, notes, showPan, selectedPan, showClientBankDetails, billerId, services, customInvoiceNumber };
       const res = invoiceId
         ? await fetch(`/api/invoice/${invoiceId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         : await fetch('/api/invoice', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
 
       if (!res.ok) throw new Error();
       toast.success(invoiceId ? 'Invoice updated successfully!' : 'Invoice created successfully!');
+      router.refresh();
       router.push('/dashboard');
     } catch {
       setError('Failed to save invoice. Please try again.');
     } finally {
       setSaving(false);
     }
-  }, [clientId, date, dueDate, notes, showPan, showClientBankDetails, services, invoiceId, router, customInvoiceNumber]);
+  }, [clientId, date, dueDate, notes, showPan, showClientBankDetails, billerId, services, invoiceId, router, customInvoiceNumber]);
 
   // ─── Download PDF ──────────────────────────────────────────────────────────
   const handleDownload = () => {
@@ -229,7 +239,7 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
   const handleDuplicate = useCallback(async () => {
     setSaving(true);
     try {
-      const payload = { clientId, date, dueDate, notes, showPan, showClientBankDetails, services, customInvoiceNumber };
+      const payload = { clientId, date, dueDate, notes, showPan, selectedPan, showClientBankDetails, billerId, services, customInvoiceNumber };
       const res = await fetch('/api/invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -237,13 +247,14 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
       });
       if (!res.ok) throw new Error();
       toast.success('Invoice duplicated successfully!');
+      router.refresh();
       router.push('/dashboard');
     } catch {
       setError('Failed to duplicate invoice.');
     } finally {
       setSaving(false);
     }
-  }, [clientId, date, dueDate, notes, showPan, showClientBankDetails, services, router, customInvoiceNumber]);
+  }, [clientId, date, dueDate, notes, showPan, showClientBankDetails, billerId, services, router, customInvoiceNumber]);
 
   // ─── Render ────────────────────────────────────────────────────────────────
   if (!mounted) {
@@ -325,6 +336,25 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
         {/* ── FORM ── */}
         <div className={`w-full lg:w-[420px] xl:w-[480px] flex-shrink-0 space-y-5 ${mobileView === 'preview' ? 'hidden lg:block' : ''}`}>
           <div className="flex flex-col gap-8">
+            {/* Biller Selection */}
+            <section className="bg-canvas rounded-md border border-hairline p-6 space-y-4 shadow-none">
+              <h2 className="text-[14px] font-medium text-muted uppercase tracking-wide">Billed From</h2>
+              <select
+                value={billerId}
+                onChange={(e) => {
+                  setBillerId(e.target.value);
+                  const newBiller = BILLERS.find(b => b.id === e.target.value);
+                  if (newBiller) setSelectedPan(newBiller.pan);
+                }}
+                className="w-full border border-hairline rounded-sm px-[12px] py-[12px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all bg-canvas appearance-none"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236a6a6a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
+              >
+                {BILLERS.map((b) => (
+                  <option key={b.id} value={b.id}>{b.name}</option>
+                ))}
+              </select>
+            </section>
+
             {/* Client Selection */}
             <section className="bg-canvas rounded-md border border-hairline p-6 space-y-4 shadow-none">
               <h2 className="text-[14px] font-medium text-muted uppercase tracking-wide">Client</h2>
@@ -512,6 +542,21 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
                 <p className="text-[14px] text-body mt-3 bg-surface-soft rounded-sm px-4 py-3 border border-hairline">
                   PAN will be hidden from the invoice preview and PDF.
                 </p>
+              )}
+              {showPan && (
+                <div className="mt-4 pt-4 border-t border-hairline">
+                  <label className="block text-[14px] font-medium text-muted mb-2">Select PAN to use</label>
+                  <select
+                    value={selectedPan}
+                    onChange={(e) => setSelectedPan(e.target.value)}
+                    className="w-full border border-hairline rounded-sm px-[12px] py-[12px] text-ink focus:border-ink focus:border-2 focus:ring-0 outline-none transition-all bg-canvas appearance-none"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236a6a6a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
+                  >
+                    {Array.from(new Set(BILLERS.map((b) => b.pan))).map((pan) => (
+                      <option key={pan} value={pan}>{pan}</option>
+                    ))}
+                  </select>
+                </div>
               )}
             </section>
 

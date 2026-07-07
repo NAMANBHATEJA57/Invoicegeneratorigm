@@ -20,13 +20,15 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { clientId, date, dueDate, notes, showPan, showClientBankDetails, services, customInvoiceNumber } = body as {
+    const { clientId, date, dueDate, notes, showPan, selectedPan, showClientBankDetails, services, customInvoiceNumber } = body as {
       clientId: string;
       date: string;
       dueDate: string;
       notes?: string;
       showPan?: boolean;
+      selectedPan?: string;
       showClientBankDetails?: boolean;
+      billerId?: string;
       services: { description: string; qty: number; rate: number; total: number }[];
       customInvoiceNumber?: string;
     };
@@ -43,7 +45,9 @@ export async function POST(req: NextRequest) {
         totalAmount,
         notes,
         showPan: showPan ?? true,
+        selectedPan,
         showClientBankDetails: showClientBankDetails ?? false,
+        billerId: body.billerId || 'rupali',
         services: {
           create: services.map((s) => ({
             description: s.description,

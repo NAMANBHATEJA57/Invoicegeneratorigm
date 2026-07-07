@@ -27,6 +27,7 @@ export default async function InvoiceDetailPage({ params }: Props) {
     dueDate: invoice.dueDate.toISOString().split('T')[0],
     notes: invoice.notes ?? '',
     showPan: invoice.showPan,
+    selectedPan: invoice.selectedPan,
     showClientBankDetails: invoice.showClientBankDetails,
     services: invoice.services.map((s) => ({
       id: s.id,

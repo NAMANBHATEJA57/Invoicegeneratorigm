@@ -1,7 +1,7 @@
 'use client';
 
 import React, { forwardRef } from 'react';
-import { BILLER } from '@/lib/invoice';
+import { BILLERS } from '@/lib/biller';
 import { LOGO_PNG_B64 as LOGO_B64 } from '@/lib/assets';
 import type { ServiceRow } from './ServiceTable';
 
@@ -11,7 +11,9 @@ export interface InvoiceData {
   dueDate: string;
   notes?: string;
   showPan?: boolean;
+  selectedPan?: string;
   showClientBankDetails?: boolean;
+  billerId?: string;
   client: {
     name: string;
     address: string;
@@ -35,6 +37,7 @@ interface InvoicePreviewProps {
 
 const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, unmasked = false }, ref) => {
   const total = data.services.reduce((sum, s) => sum + s.total, 0);
+  const biller = BILLERS.find(b => b.id === data.billerId) || BILLERS[0];
 
   const fmt = (d: string) => {
     if (!d) return '—';
@@ -98,10 +101,14 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
               GSTIN: {data.client.gstin}
             </div>
           )}
+          {data.client.cin && (
+            <div style={{ color: '#555', fontSize: '8.5pt' }}>
+              CIN: {data.client.cin}
+            </div>
+          )}
           {data.showClientBankDetails && (
             <div style={{ marginTop: '2mm', paddingTop: '2mm', borderTop: '1px solid #eee' }}>
               <div style={{ fontWeight: 600, fontSize: '9pt', color: '#333', marginBottom: '1mm' }}>Client Bank Details</div>
-              {data.client.cin && <div style={{ color: '#555', fontSize: '8.5pt' }}>CIN: {data.client.cin}</div>}
               {data.client.bankName && <div style={{ color: '#555', fontSize: '8.5pt' }}>Bank Name: {data.client.bankName}</div>}
               {data.client.accountName && <div style={{ color: '#555', fontSize: '8.5pt' }}>Account Name: {data.client.accountName}</div>}
               {data.client.accountNumber && <div style={{ color: '#555', fontSize: '8.5pt' }}>Account No.: {data.client.accountNumber}</div>}
@@ -112,19 +119,19 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
         </div>
         <div style={{ flex: 1, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <div style={{ fontWeight: 700, marginBottom: '1.5mm', color: '#1a1a1a', fontSize: '10.5pt' }}>Billed From</div>
-          <div style={{ fontWeight: 600, marginBottom: '0.5mm' }}>{BILLER.name}</div>
-          <div style={{ color: '#555', fontSize: '8.5pt', lineHeight: '1.4', maxWidth: '80mm' }}>
-            {BILLER.address}
+          <div style={{ fontWeight: 600, marginBottom: '0.5mm' }}>{biller.name}</div>
+          <div style={{ color: '#555', fontSize: '8.5pt', lineHeight: '1.4', maxWidth: '80mm', whiteSpace: 'pre-line' }}>
+            {biller.address}
           </div>
           <div style={{ color: '#555', fontSize: '8.5pt', marginTop: '1mm' }}>
-            Email: {BILLER.email}
+            Email: {biller.email}
           </div>
           <div style={{ color: '#555', fontSize: '8.5pt' }}>
-            Mobile: {BILLER.phone}
+            Mobile: {biller.phone}
           </div>
           {data.showPan !== false && (
             <div style={{ color: '#555', fontSize: '8.5pt' }}>
-              PAN: {BILLER.pan}
+              PAN: {data.selectedPan || biller.pan}
             </div>
           )}
         </div>
@@ -219,11 +226,11 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, color: '#000', marginBottom: '2mm', fontSize: '10.5pt' }}>Bank Details</div>
           <div style={{ fontSize: '9pt', color: '#555', lineHeight: '1.5' }}>
-            <div>Account Name: {BILLER.bank.accountName}</div>
-            <div>Bank: {BILLER.bank.name}</div>
-            <div>Branch Name: {BILLER.bank.branch}</div>
-            <div>Account No.: {unmasked ? BILLER.bank.accountNumber : ('*'.repeat(BILLER.bank.accountNumber.length - 4) + BILLER.bank.accountNumber.slice(-4))}</div>
-            <div>IFSC Code: {unmasked ? BILLER.bank.ifsc : (BILLER.bank.ifsc.slice(0, 4) + '****' + BILLER.bank.ifsc.slice(-3))}</div>
+            <div>Account Name: {biller.bank.accountName}</div>
+            <div>Bank: {biller.bank.name}</div>
+            <div>Branch Name: {biller.bank.branch}</div>
+            <div>Account No.: {unmasked ? biller.bank.accountNumber : ('*'.repeat(biller.bank.accountNumber.length - 4) + biller.bank.accountNumber.slice(-4))}</div>
+            <div>IFSC Code: {unmasked ? biller.bank.ifsc : (biller.bank.ifsc.slice(0, 4) + '****' + biller.bank.ifsc.slice(-3))}</div>
           </div>
         </div>
 
@@ -236,7 +243,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
             />
           </div>
           <div style={{ width: '100%', borderTop: '1px solid #000', paddingTop: '1.5mm' }}>
-             <div style={{ fontWeight: 700, fontSize: '10pt', color: '#000' }}>{BILLER.name}</div>
+             <div style={{ fontWeight: 700, fontSize: '10pt', color: '#000' }}>{biller.name}</div>
           </div>
         </div>
       </div>
@@ -247,8 +254,8 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
            Notes / Legal Clauses: 1. The content created under this invoice is for educational and promotional purposes only as mutually agreed. 2. Intellectual Property Rights: Ownership of the final videos transfers to SkillBytes LLC only after full payment is received. 3. Until the payment is completed, all deliverables remain the exclusive property of Rupali Bhateja. 4. Any revisions, edits, or additional versions beyond the agreed two reels will be billed separately. 5. Payment once made is non-refundable. 6. Rupali Bhateja retains the right to include the content in her personal portfolio or showreel unless otherwise agreed in writing. 7. This invoice and related transactions are governed by the laws of India, and any disputes shall be subject to the jurisdiction of Delhi courts only.
          </div>
          <div style={{ borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'space-between', padding: '3.5mm 0', fontSize: '10pt', color: '#6B7280' }}>
-             <div>{BILLER.phone}</div>
-             <div>Email: {BILLER.email}</div>
+             <div>{biller.phone}</div>
+             <div>Email: {biller.email}</div>
          </div>
       </div>
 

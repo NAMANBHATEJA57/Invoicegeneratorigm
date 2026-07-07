@@ -22,13 +22,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params;
     const body = await req.json();
-    const { clientId, date, dueDate, notes, showPan, showClientBankDetails, services, customInvoiceNumber } = body as {
+    const { clientId, date, dueDate, notes, showPan, selectedPan, showClientBankDetails, services, customInvoiceNumber } = body as {
       clientId: string;
       date: string;
       dueDate: string;
       notes?: string;
       showPan?: boolean;
+      selectedPan?: string;
       showClientBankDetails?: boolean;
+      billerId?: string;
       services: { id?: string; description: string; qty: number; rate: number; total: number }[];
       customInvoiceNumber?: string;
     };
@@ -45,7 +47,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       totalAmount,
       notes,
       showPan: showPan ?? true,
+      selectedPan,
       showClientBankDetails: showClientBankDetails ?? false,
+      billerId: body.billerId || 'rupali',
       services: {
         create: services.map((s) => ({
           description: s.description,

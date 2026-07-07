@@ -18,22 +18,3 @@ export async function generateInvoiceNumber(): Promise<string> {
   return `RB/1026/${padded}`;
 }
 
-/** Static biller details — update these to match your business */
-export const BILLER = {
-  name: 'Rupali Bhateja',
-  tagline: 'The Inquisitive Mind',
-  address: 'BC 2, West Shalimar Bagh, Delhi – 110088, India',
-  email: 'rupali.piyush@gmail.com',
-  phone: '+91 9899485651',
-  pan: 'AJUPB8140M',
-  bank: {
-    name: 'HDFC Bank',
-    branch: 'Adarsh Nagar',
-    accountName: 'Piyush Bhateja HUF',
-    accountNumber: '50200023785569',
-    ifsc: 'HDFC0000391',
-    upi: 'rupali.piyush@okaxis', // Dummy UPI based on email
-  },
-} as const;
-
-export type BillerType = typeof BILLER;
