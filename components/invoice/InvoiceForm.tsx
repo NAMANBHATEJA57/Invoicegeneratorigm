@@ -182,7 +182,10 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
       /src="(\/[^"]+)"/g,
       `src="${origin}$1"`
     );
-    const filename = (invoiceNumber || 'invoice') + '.pdf';
+    
+    const safeClientName = (selectedClient?.name || 'Client').replace(/[^a-zA-Z0-9]/g, '_');
+    const safeDate = date || new Date().toISOString().split('T')[0];
+    const filename = `${safeClientName}_${safeDate}.pdf`;
 
     const html = `<!DOCTYPE html>
 <html lang="en">
