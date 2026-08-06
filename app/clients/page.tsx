@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { ArrowLeft, UserPlus, Users, Edit2, Trash2, Mail, Phone, FileText, MapPin, PlusCircle, X } from 'lucide-react';
 
 interface Client {
   id: string;
@@ -112,8 +113,8 @@ export default function ClientsPage() {
       <header className="bg-canvas border-b border-hairline h-[80px] flex items-center">
         <div className="w-full max-w-5xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="w-[32px] h-[32px] flex items-center justify-center bg-surface-strong text-ink rounded-full hover:bg-hairline-soft transition-colors">
-              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+            <Link href="/dashboard" className="w-[32px] h-[32px] flex items-center justify-center bg-gray-100 text-text rounded-full hover:bg-gray-200 transition-colors">
+              <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
               <h1 className="text-[21px] font-bold text-ink leading-[1.43] tracking-normal">Clients</h1>
@@ -123,7 +124,7 @@ export default function ClientsPage() {
             onClick={openNewModal}
             className="flex items-center gap-2 px-[24px] py-[14px] bg-brand-primary text-white text-[16px] font-medium leading-[1.25] rounded-sm hover:bg-brand-active transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px]">person_add</span>
+            <UserPlus className="w-5 h-5" />
             <span className="hidden sm:inline">New Client</span>
           </button>
         </div>
@@ -137,7 +138,7 @@ export default function ClientsPage() {
         ) : clients.length === 0 ? (
           <div className="text-center py-24 bg-canvas rounded-md border border-hairline">
             <div className="inline-flex items-center justify-center w-14 h-14 bg-surface-soft rounded-full mb-4">
-              <span className="material-symbols-outlined text-[28px] text-brand-primary">group</span>
+              <Users className="w-8 h-8 text-primary" />
             </div>
             <h2 className="text-[20px] font-semibold text-ink leading-[1.20] tracking-[-0.18px] mb-1">No clients yet</h2>
             <p className="text-[16px] text-body leading-[1.5] mb-6">Add your first client to start creating invoices.</p>
@@ -162,14 +163,14 @@ export default function ClientsPage() {
                     className="w-8 h-8 rounded-full bg-surface-strong text-ink hover:bg-hairline-soft flex items-center justify-center transition-colors"
                     title="Edit Client"
                   >
-                    <span className="material-symbols-outlined text-[16px]">edit</span>
+                    <Edit2 className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={() => handleDeleteClient(client.id, client.name)}
                     className="w-8 h-8 rounded-full bg-surface-strong text-ink hover:bg-brand-disabled hover:text-brand-active flex items-center justify-center transition-colors"
                     title="Delete Client"
                   >
-                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
 
@@ -188,25 +189,25 @@ export default function ClientsPage() {
                 <div className="space-y-2 text-[14px] text-body">
                   {client.email && (
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[14px] text-muted flex-shrink-0">mail</span>
+                      <Mail className="w-4 h-4 text-gray flex-shrink-0" />
                       <span className="truncate">{client.email}</span>
                     </div>
                   )}
                   {client.phone && (
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[14px] text-muted flex-shrink-0">call</span>
+                      <Phone className="w-4 h-4 text-gray flex-shrink-0" />
                       <span>{client.phone}</span>
                     </div>
                   )}
                   {client.gstin && (
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[14px] text-muted flex-shrink-0">receipt_long</span>
+                      <FileText className="w-4 h-4 text-gray flex-shrink-0" />
                       <span>GSTIN: {client.gstin}</span>
                     </div>
                   )}
                   {client.address && (
                     <div className="flex items-start gap-2">
-                      <span className="material-symbols-outlined text-[14px] text-muted flex-shrink-0 mt-0.5">location_on</span>
+                      <MapPin className="w-4 h-4 text-gray flex-shrink-0 mt-0.5" />
                       <span className="line-clamp-2">{client.address}</span>
                     </div>
                   )}
@@ -218,7 +219,7 @@ export default function ClientsPage() {
               onClick={openNewModal}
               className="bg-canvas rounded-md border border-hairline p-6 flex flex-col items-center justify-center gap-2 text-muted hover:border-ink hover:text-ink transition-all duration-200 min-h-[160px]"
             >
-              <span className="material-symbols-outlined text-[28px]">add_circle</span>
+              <PlusCircle className="w-8 h-8" />
               <span className="text-[14px] font-medium">Add Client</span>
             </button>
           </div>
@@ -238,7 +239,7 @@ export default function ClientsPage() {
                 onClick={() => setShowAddModal(false)}
                 className="w-8 h-8 flex items-center justify-center bg-canvas rounded-full text-ink hover:bg-surface-strong transition-colors"
               >
-                <span className="material-symbols-outlined text-[18px]">close</span>
+                <X className="w-5 h-5" />
               </button>
             </div>
             <div className="overflow-y-auto flex-1">

@@ -49,3 +49,6 @@ public/logo_b64.txt
 public/logo_png_b64.txt
 public/sign_png_b64.txt
 public/Sign_b64.txt
+
+# ── Agentic AI ────────────────────────────────────────────────
+.agents/

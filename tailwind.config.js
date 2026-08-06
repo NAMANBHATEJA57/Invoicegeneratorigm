@@ -8,36 +8,40 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["'Airbnb Cereal VF'", 'Circular', '-apple-system', 'system-ui', 'Roboto', 'sans-serif'],
+        sans: ['var(--font-manrope)', 'sans-serif'],
+        secondary: ['var(--font-inter)', 'sans-serif'],
+        mono: ['var(--font-ibm-plex-mono)', 'monospace'],
       },
       colors: {
+        primary: {
+          DEFAULT: '#456D38',
+          dark: '#26472B',
+          light: '#DDE8D7',
+        },
         brand: {
-          primary: '#ff385c',
-          active: '#e00b41',
-          disabled: '#ffd1da',
+          primary: '#456D38',
+          dark: '#26472B',
+          light: '#DDE8D7',
         },
-        canvas: '#ffffff',
-        ink: '#222222',
-        body: '#3f3f3f',
-        muted: {
-          DEFAULT: '#6a6a6a',
-          soft: '#929292',
-        },
-        hairline: {
-          DEFAULT: '#dddddd',
-          soft: '#ebebeb',
-        },
-        surface: {
-          soft: '#f7f7f7',
-          strong: '#f2f2f2',
-        },
+        accent: '#D4A017',
+        background: '#FAFAF8',
+        surface: '#FFFFFF',
+        text: '#18181B',
+        gray: '#71717A',
+        border: '#E5E7EB',
+        success: '#22C55E',
+        warning: '#F59E0B',
+        danger: '#DC2626',
       },
       boxShadow: {
-        card: 'rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0, rgba(0, 0, 0, 0.1) 0 4px 8px 0',
+        sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        card: '0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 1px 4px -1px rgba(0, 0, 0, 0.03)',
+        dialog: '0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
       },
       borderRadius: {
         sm: '8px',
-        md: '14px',
+        md: '12px',
+        lg: '20px',
         full: '9999px',
       },
     },

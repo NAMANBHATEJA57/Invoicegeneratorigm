@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Trash2, Plus } from 'lucide-react';
 
 export interface ServiceRow {
   id: string;
@@ -81,11 +82,11 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
             <button
               type="button"
               onClick={() => removeRow(index)}
-              className="w-8 h-8 flex items-center justify-center text-muted hover:text-brand-active hover:bg-hairline-soft rounded-full transition-all"
+              className="w-8 h-8 flex items-center justify-center text-gray hover:text-danger hover:bg-gray-50 rounded-full transition-all"
               title="Remove row"
               disabled={services.length === 1}
             >
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
 
@@ -126,11 +127,11 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
                 <button
                   type="button"
                   onClick={() => removeRow(index)}
-                  className="w-11 h-11 flex items-center justify-center text-muted hover:text-brand-active hover:bg-hairline-soft rounded-full transition-all border border-transparent"
+                  className="w-11 h-11 flex items-center justify-center text-gray hover:text-danger hover:bg-gray-50 rounded-full transition-all border border-transparent"
                   title="Remove row"
                   disabled={services.length === 1}
                 >
-                  <span className="material-symbols-outlined text-[20px]">delete</span>
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -145,9 +146,9 @@ export default function ServiceTable({ services, onChange }: ServiceTableProps) 
       <button
         type="button"
         onClick={addRow}
-        className="flex items-center gap-1 text-[14px] text-brand-primary hover:text-brand-active font-medium mt-2 transition-colors"
+        className="flex items-center gap-1 text-[14px] text-primary hover:text-primary-dark font-medium mt-2 transition-colors"
       >
-        <span className="material-symbols-outlined text-[18px]">add</span>
+        <Plus className="w-4 h-4" />
         Add line item
       </button>
     </div>

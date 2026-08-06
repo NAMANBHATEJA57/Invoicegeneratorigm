@@ -57,7 +57,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
         height: '297mm',
         padding: '10mm 14mm',
         background: '#fff',
-        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+        fontFamily: "'Manrope', system-ui, -apple-system, sans-serif",
         fontSize: '9.5pt',
         color: '#222222',
         boxSizing: 'border-box',
@@ -68,7 +68,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
     >
       {/* ── HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '5mm' }}>
-        <h1 style={{ fontSize: '28pt', fontWeight: 700, margin: 0, color: '#000', letterSpacing: '-0.02em' }}>INVOICE</h1>
+        <h1 style={{ fontSize: '28pt', fontWeight: 700, margin: 0, color: '#456D38', letterSpacing: '-0.02em' }}>INVOICE</h1>
         <div style={{ textAlign: 'right' }}>
           <img
             src={LOGO_B64}
@@ -144,15 +144,15 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
         {/* Sidebar */}
         <div style={{ width: '40mm', flexShrink: 0 }}>
           <div style={{ marginBottom: '6mm' }}>
-            <div style={{ fontWeight: 700, color: '#333', marginBottom: '0.5mm', fontSize: '9pt', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Invoice #</div>
+            <div style={{ fontWeight: 700, color: '#456D38', marginBottom: '0.5mm', fontSize: '9pt', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Invoice #</div>
             <div style={{ fontSize: '10pt', color: '#1a1a1a' }}>{data.invoiceNumber || 'RB/1026/09'}</div>
           </div>
           <div style={{ marginBottom: '6mm' }}>
-            <div style={{ fontWeight: 700, color: '#333', marginBottom: '0.5mm', fontSize: '9pt', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Invoice date</div>
+            <div style={{ fontWeight: 700, color: '#456D38', marginBottom: '0.5mm', fontSize: '9pt', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Invoice date</div>
             <div style={{ fontSize: '10pt', color: '#1a1a1a' }}>{fmt(data.date) || '23 March 2026'}</div>
           </div>
           <div style={{ marginBottom: '6mm' }}>
-            <div style={{ fontWeight: 700, color: '#333', marginBottom: '0.5mm', fontSize: '9pt', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Due date</div>
+            <div style={{ fontWeight: 700, color: '#456D38', marginBottom: '0.5mm', fontSize: '9pt', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Due date</div>
             <div style={{ fontSize: '10pt', color: '#1a1a1a' }}>{fmt(data.dueDate) || '30 March 2026'}</div>
           </div>
         </div>
@@ -194,9 +194,9 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
               ))}
             </tbody>
             <tfoot>
-              <tr style={{ backgroundColor: '#F7F7F7' }}>
-                <td colSpan={2} style={{ padding: '3.5mm 3mm', color: '#222222', fontWeight: 700, fontSize: '10pt' }}>Total due</td>
-                <td colSpan={2} style={{ padding: '3.5mm 3mm', textAlign: 'right', color: '#222222', fontWeight: 700, fontSize: '11pt' }}>
+              <tr style={{ backgroundColor: '#DDE8D7' }}>
+                <td colSpan={2} style={{ padding: '3.5mm 3mm', color: '#26472B', fontWeight: 700, fontSize: '10pt' }}>Total due</td>
+                <td colSpan={2} style={{ padding: '3.5mm 3mm', textAlign: 'right', color: '#26472B', fontWeight: 700, fontSize: '11pt' }}>
                   INR ₹ {total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </td>
               </tr>
@@ -208,13 +208,13 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(({ data, 
       {/* ── BOTTOM SECTION: REMARKS ── */}
       <div style={{ marginBottom: '4mm' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '2mm', marginBottom: '1.5mm' }}>
-          <div style={{ width: '10px', height: '10px', backgroundColor: '#9CA3AF', borderRadius: '2px' }} />
+          <div style={{ width: '10px', height: '10px', backgroundColor: '#D4A017', borderRadius: '2px' }} />
           <div style={{ fontSize: '9pt', color: '#555' }}>
             Total Amount Payable in words: Rupees {numberToWords(total)} Only
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '2mm' }}>
-          <div style={{ width: '10px', height: '10px', backgroundColor: '#9CA3AF', borderRadius: '2px' }} />
+          <div style={{ width: '10px', height: '10px', backgroundColor: '#D4A017', borderRadius: '2px' }} />
           <div style={{ fontSize: '9pt', color: '#555' }}>
             Full payment to be made within 7 days from the date of invoice via bank transfer or UPI.
           </div>

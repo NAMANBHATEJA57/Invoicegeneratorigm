@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --foreground: #222222; /* ink */
-  --background: #ffffff; /* canvas */
+  --foreground: #18181B; /* text */
+  --background: #FAFAF8; /* background */
 }
 
 * {
@@ -14,7 +14,6 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Airbnb Cereal VF', 'Circular', -apple-system, system-ui, 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

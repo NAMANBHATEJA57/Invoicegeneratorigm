@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Users, Plus, FileText, ChevronRight, ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -16,21 +17,30 @@ export default async function DashboardPage() {
       <header className="bg-canvas border-b border-hairline h-[80px] flex items-center">
         <div className="w-full max-w-5xl mx-auto px-6 flex items-center justify-between">
           <div>
-            <h1 className="text-[21px] font-bold text-ink leading-[1.43] tracking-normal">Invoices</h1>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/"
+                className="flex items-center justify-center w-10 h-10 rounded-sm hover:bg-surface-soft text-muted hover:text-ink transition-colors"
+                title="Back to Brand Guidelines"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+              <h1 className="text-[21px] font-bold text-ink leading-[1.43] tracking-normal">Invoices</h1>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <Link
               href="/clients"
               className="flex items-center gap-2 px-[23px] py-[13px] bg-canvas border border-ink text-ink text-[16px] font-medium leading-[1.25] rounded-sm hover:bg-surface-soft transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]">group</span>
+              <Users className="w-[18px] h-[18px]" />
               <span className="hidden sm:inline">Clients</span>
             </Link>
             <Link
               href="/new"
               className="flex items-center gap-2 px-[24px] py-[14px] bg-brand-primary text-white text-[16px] font-medium leading-[1.25] rounded-sm hover:bg-brand-active transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]">add</span>
+              <Plus className="w-[18px] h-[18px]" />
               <span className="hidden sm:inline">New Invoice</span>
             </Link>
           </div>
@@ -64,7 +74,7 @@ export default async function DashboardPage() {
               </div>
               <div className="bg-canvas rounded-md border border-hairline px-6 py-6 shadow-none hover:shadow-card transition-shadow">
                 <p className="text-[14px] text-muted font-medium uppercase tracking-wide">Latest</p>
-                <p className="text-[22px] font-medium text-ink mt-2 tracking-[-0.44px] leading-[1.18]">{invoices[0].invoiceNumber}</p>
+                <p className="text-[28px] font-bold text-ink mt-2 leading-[1.43]">{invoices[0].invoiceNumber}</p>
               </div>
             </div>
 

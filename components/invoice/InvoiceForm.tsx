@@ -3,6 +3,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { ArrowLeft, Copy, Download } from 'lucide-react';
 
 import ServiceTable, { ServiceRow } from './ServiceTable';
 import InvoicePreview, { InvoiceData } from './InvoicePreview';
@@ -274,8 +275,8 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
       <header className="sticky top-0 z-40 bg-canvas border-b border-hairline h-[80px] flex items-center" suppressHydrationWarning>
         <div className="w-full max-w-screen-xl mx-auto px-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-4">
-            <button onClick={() => router.push('/dashboard')} className="w-[32px] h-[32px] flex items-center justify-center bg-surface-strong text-ink rounded-full hover:bg-hairline-soft transition-colors">
-              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+            <button onClick={() => router.push('/dashboard')} className="w-[32px] h-[32px] flex items-center justify-center bg-gray-100 text-text rounded-full hover:bg-gray-200 transition-colors">
+              <ArrowLeft className="w-5 h-5" />
             </button>
             <h1 className="text-[21px] font-bold text-ink leading-[1.43] tracking-normal">
               {invoiceId ? `Edit — ${invoiceNumber}` : 'New Invoice'}
@@ -287,18 +288,18 @@ export default function InvoiceForm({ invoiceId, invoiceNumber, initialData, cli
               <button
                 onClick={handleDuplicate}
                 disabled={saving}
-                className="hidden sm:flex items-center gap-1.5 px-[24px] py-[14px] text-[16px] font-medium text-ink bg-canvas border border-ink rounded-sm hover:bg-surface-soft transition-colors h-[48px]"
+                className="hidden sm:flex items-center gap-1.5 px-[24px] py-[14px] text-[16px] font-medium text-text bg-surface border border-border rounded-sm hover:bg-gray-50 transition-colors h-[48px]"
               >
-                <span className="material-symbols-outlined text-[18px]">content_copy</span>
+                <Copy className="w-5 h-5" />
                 Duplicate
               </button>
             )}
             {invoiceNumber && (
               <button
                 onClick={handleDownload}
-                className="hidden sm:flex items-center gap-1.5 px-[24px] py-[14px] text-[16px] font-medium text-ink bg-canvas border border-hairline rounded-sm hover:bg-surface-soft transition-colors h-[48px]"
+                className="hidden sm:flex items-center gap-1.5 px-[24px] py-[14px] text-[16px] font-medium text-text bg-surface border border-border rounded-sm hover:bg-gray-50 transition-colors h-[48px]"
               >
-                <span className="material-symbols-outlined text-[18px]">download</span>
+                <Download className="w-5 h-5" />
                 PDF
               </button>
             )}
